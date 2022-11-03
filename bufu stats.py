@@ -4,7 +4,7 @@
 # login through headers and cookies because other approach does not work 
 
 import requests, re
-
+"""
 #open and convert files with headers and cookies
 cookies = eval(open('cookies.txt').read())
 headers = eval(open('headers.txt').read())
@@ -13,7 +13,7 @@ headers = eval(open('headers.txt').read())
 
 params = {
     'f': '11', 
-    't': '1272',
+    't': '1275',
 }
 
 #params=params
@@ -22,21 +22,23 @@ params = {
 page = requests.get('https://forum.brno-ultimate.cz/domains/forum.brno-ultimate.cz/viewtopic.php?', params=params, cookies=cookies, headers=headers)
 
 #print(page.text)
-file = open("scraped.txt", "w")
-file.write(page.text)
+file = open("scraped.txt", "a")
+file.write('\n\n\n###   ' + page.url + '   ###\n\n\n' + page.text)
+"""
 
+#go through the file and count attendace (create dictionary)
 
-# TODO go through the file and count attendace (create dictionary)
-
-membersInAnoRegex = re.compile(r'(poll_vote_notice.+)(Ano.+)(Ne</label>)', re.DOTALL)
-file = open("scraped.txt", "r")
-correctPart = membersInAnoRegex.search(file.read()).group()
-namesRegex = re.compile(r'''class="username">(.+?)</a>''')
-attendants = namesRegex.findall(correctPart)
+membersInAnoRegex = re.compile(r'poll_vote_notice.+?(Ano.+?)Ne</label>', re.DOTALL) #regex for finding part of scraped mess where people voted as Ano
+namesRegex = re.compile(r'''class="username">(.+?)</a>''')  #regex for finding names the result
 evidence = {}
-for at in attendants:
-    evidence.setdefault(at,0)
-    evidence[at] += 1
+
+file = open("scraped.txt", "r")
+correctPart = membersInAnoRegex.findall(file.read())
+for training in correctPart:
+    attendants = namesRegex.findall(training)
+    for at in attendants:
+        evidence.setdefault(at,0)
+        evidence[at] += 1
 print(evidence)
 
 
