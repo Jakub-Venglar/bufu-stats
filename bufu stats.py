@@ -1,9 +1,9 @@
 #! python3
 # Scrapes data from our team forum and count team members attendace on practices
-# use https://curlconverter.com/ and copy bash cURL for getting login cookies
+# use https://curlconverter.com/ and convert bash cURL from forum for getting login cookies and headers- cookies.txt and headers.txt needed in the same folder as script
 # login through headers and cookies because other approach does not work 
 
-import requests, re, os, sys
+import requests, re, os, sys, csv
 
 #make sure working directory is set the same as file directory
 os.chdir(os.path.dirname(sys.argv[0]))
@@ -12,7 +12,7 @@ os.chdir(os.path.dirname(sys.argv[0]))
 cookies = eval(open('cookies.txt').read())
 headers = eval(open('headers.txt').read())
 
-# start and end parametr of t in url - f is for higher forum places and actually is not needed
+# start and end parametr of t in url - f is for higher forum structures and actually is not needed
 
 startT= 1238
 endtT= 1275
@@ -22,7 +22,7 @@ with open('scraped.txt', 'w', encoding='utf-8') as file:
         file.write('')
 
 isPracticeRegex= re.compile(r'''(Pondělí |Čtvrtek ).+?(ZAČÁTEČNÍCI|POKROČILÍ|VŠICHNI|všichni)''') #regex for making sure we are in practice part
-membersInAnoRegex = re.compile(r'poll_vote_notice.+?(Ano.+?)Ne</label>', re.DOTALL) #regex for finding part of scraped mess where people voted as Ano
+membersInAnoRegex = re.compile(r'poll_vote_notice.+?(Ano.+?)Ne</label>', re.DOTALL) #regex for finding poll part of scraped mess where people voted as Ano - needs to be non-greedy
 
 #main loop for going throug all practice pages and append scraped content to file
 
@@ -38,7 +38,7 @@ for p in range(startT,endtT+1):
             file.write('\n\n\n   ###   ' + page.url + '   ###   \n\n\n' + '\n\n\n   ###   ' + confirmPractice.group() + '   ###   \n\n\n' + page.text)
 
 
-#go through the file and count attendace (create dictionary)
+#go through the file and count attendace in dictionary
 
 namesRegex = re.compile(r'''class="username">(.+?)</a>''')  #regex for finding names the result
 evidence = {}
@@ -53,3 +53,4 @@ with open('scraped.txt', 'r', encoding='utf-8') as file:
 print(evidence)
 
 # TODO save attendace to some nice format for sheet
+with open(dochazka.csv, 'w', encoding='utf-8') as doch:
