@@ -50,7 +50,9 @@ with open('scraped.txt', 'r', encoding='utf-8') as file:
         for at in attendants:
             evidence.setdefault(at,0)
             evidence[at] += 1
-print(evidence)
+sortedEvidence = dict(sorted(evidence.items(), key=lambda x:x[1], reverse=True))
+
+print(sortedEvidence)
 
 # TODO save attendace to some nice format for sheet
-with open(dochazka.csv, 'w', encoding='utf-8') as doch:
+#with open(dochazka.csv, 'w', encoding='utf-8') as doch:
