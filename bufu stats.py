@@ -13,10 +13,19 @@ os.chdir(os.path.dirname(sys.argv[0]))
 isPracticeRegex= re.compile(r'''(Pondělí |Čtvrtek ).+?(ZAČÁTEČNÍCI|POKROČILÍ|VŠICHNI|všichni)''') #regex for making sure we are in practice page
 membersInAnoRegex = re.compile(r'poll_vote_notice.+?(Ano.+?)Ne</label>', re.DOTALL) #regex for finding poll part of scraped mess where people voted as Ano - needs to be non-greedy
 namesRegex = re.compile(r'''class="username">(.+?)</a>''')  #regex for finding names the result
-datesRegex = re.compile(r'(([0-2]?[0-9]|3[0-1])\.([1-2]?[0-9])\.)')
+datesRegex = re.compile(r'(([0-2]?[0-9]|3[0-1])\.([1-2]?[0-9])\.)') #find dates so we can count them later
+cookiesRegex = re.compile(r"""'cookie: (.+?)' \\""") #find cookies in curl
 
-#open and convert files with headers and cookies
-cookies = eval(open('cookies.txt').read())
+#input for curl and extraction of cookies used for login
+
+cookiesSent = str(input('Vlož curl bash po přihlášení - je nutné zformátovat na jeden řádek'))
+
+cookiesFound = cookiesRegex.findall(cookiesSent)[0].replace(" ","").replace('=','\': \'').replace(';','\',\n    \'')
+listOfCookies = '{\n    \''+ cookiesFound + '\',\n}'
+cookies = eval(listOfCookies)
+
+#harcoded headers 
+
 headers = {
     'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Mobile Safari/537.36',
 }
@@ -24,10 +33,10 @@ headers = {
 # start and end parametr of t in url - f is for higher forum structures and actually is not needed
 
 startT= 1238
-endtT= 1275
+endtT= int(input('Zadej koncový paramater url (poslední trénink)'))
 listOfDates = []
 
-#make original file clean
+#make original file with scraped pages clean
 with open('scraped.txt', 'w', encoding='utf-8') as file:
         file.write('')
 
@@ -62,7 +71,7 @@ with open('scraped.txt', 'r', encoding='utf-8') as file:
 
 sortedEvidence = dict(sorted(evidence.items(), key=lambda x:x[1], reverse=True))
 
-# print result
+# print results
 
 print('Celkem tréninků: ' + str(len(listOfDates)) + '\n')
 
