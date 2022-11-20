@@ -1,7 +1,7 @@
 #! python3
 # Scrapes data from our team forum and count team members attendace on practices
 # use https://curlconverter.com/ and convert bash cURL from forum for getting login cookies and headers- cookies.txt and headers.txt needed in the same folder as script
-# login through headers and cookies because other approach does not work 
+# login through cookies because other approach does not work 
 
 import requests, re, os, sys, csv
 
@@ -17,7 +17,9 @@ datesRegex = re.compile(r'(([0-2]?[0-9]|3[0-1])\.([1-2]?[0-9])\.)')
 
 #open and convert files with headers and cookies
 cookies = eval(open('cookies.txt').read())
-headers = eval(open('headers.txt').read())
+headers = {
+    'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Mobile Safari/537.36',
+}
 
 # start and end parametr of t in url - f is for higher forum structures and actually is not needed
 
